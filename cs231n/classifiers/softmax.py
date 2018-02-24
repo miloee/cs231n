@@ -35,6 +35,7 @@ def softmax_loss_naive(W, X, y, reg):
   num_train = X.shape[0]
   for i in xrange(num_train):
     scores = X[i].dot(W)
+    scores -= np.max(scores)
     correct_class_score = scores[y[i]]
     margin = 0.0
     for j in xrange(num_classes):
@@ -55,12 +56,16 @@ def softmax_loss_vectorized(W, X, y, reg):
   Inputs and outputs are the same as softmax_loss_naive.
   """
   # Initialize the loss and gradient to zero.
+  num_classes = W.shape[1]
+  num_train = X.shape[0]
   loss = 0.0
   dW = np.zeros_like(W)
   scores = X.dot(W)
   print(scores.shape)
-  marginsum = np.sum(np.exp(scores),axis=0)
-  print(marginsum.shape)
+  scores -= np.max(scores,axis=1,keepdims = True)
+  marginsum = np.log(np.sum(np.exp(scores),axis=1))
+  correct_class_score = scores[xrange(num_train),y]
+  loss = np.sum(marginsum - correct_class_score) / num_train
   #############################################################################
   # TODO: Compute the softmax loss and its gradient using no explicit loops.  #
   # Store the loss in loss and the gradient in dW. If you are not careful     #
